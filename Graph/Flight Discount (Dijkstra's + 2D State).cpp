@@ -1,0 +1,116 @@
+#include "bits/stdc++.h"
+#include <algorithm>
+#include <ostream>
+#include <queue>
+#include <string>
+#include <unordered_map>
+using namespace std;
+#define fast_io                                                                \
+  ios_base::sync_with_stdio(false);                                            \
+  cin.tie(NULL);                                                               \
+  cout.tie(NULL)
+#define ll long long
+#define pb push_back
+#define all(v) v.begin(), v.end()
+#define sz(x) (int)(x).size()
+// const int mod = 1e9 + 7;
+ 
+// int dx[8] = {0,0,-1,-1,-1,1,1,1};
+// int dy[8] = {-1,1,-1,0,1,-1,0,1};
+ 
+//         L, R, U, D
+int dx[4] ={0,0,-1,1};
+int dy[4] ={-1,1,0,0};
+ 
+class DSU {
+  vector<int>size,parent;
+  public:
+  int components;
+  DSU(int n){
+    size.resize(n,1);
+    parent.resize(n);
+    iota(begin(parent),end(parent),0);
+    components = n;
+  }
+  int findParent(int node){
+    if(parent[node]==node){return node;}
+    return parent[node] = findParent(parent[node]);
+  }
+  void merge(int u,int v){
+    int U = findParent(u);
+    int V = findParent(v);
+    if(U==V){return ;}
+    if(size[U]<size[V]){
+      size[V]+=size[U];
+      parent[U]=V;
+    }else{
+      size[U]+=size[V];
+      parent[V]=U;
+    }
+    --components;
+    return ;
+  }
+};
+
+void solve() {
+  int n,m;cin>>n>>m;
+  vector<vector<pair<int,int>>>adj(n+1);
+  for(int i=0;i<m;++i){
+    int a,b,c;cin>>a>>b>>c;
+    adj[a].push_back({b,c});
+  }
+  vector<vector<ll>>dis(n+1,vector<ll>(2,LLONG_MAX));
+  dis[1][0] = 0; // dis[node][used] 
+  // used = 0 (not used the coupan)
+  // used = 1 (used the coupan)
+  priority_queue<vector<ll>,vector<vector<ll>>,greater<vector<ll>>>pq;
+  pq.push({0,1,0}); // D, node , used
+
+  while(!pq.empty()){
+    auto head = pq.top();
+    pq.pop();
+    ll D = head[0],node = head[1],used = head[2];
+    if(dis[node][used]<D){continue;}
+    for(auto child:adj[node]){
+      if(used){
+        if(D+child.second<dis[child.first][1]){
+          dis[child.first][1] = D + child.second;
+          pq.push({dis[child.first][1],child.first,1});
+        }
+      }else{
+        if(D+child.second<dis[child.first][0]){
+          dis[child.first][0] = D + child.second;
+          pq.push({dis[child.first][0],child.first,0});
+        }
+        if(D+(child.second/2)<dis[child.first][1]){
+          dis[child.first][1] = D + (child.second/2);
+          pq.push({dis[child.first][1],child.first,1});
+        }
+      }
+    }
+  }
+  cout<<dis[n][1];
+  
+
+  return ;
+}
+ 
+ 
+int main() {
+  fast_io;
+#ifndef ONLINE_JUDGE
+  if (fopen("input.txt", "r")) {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+  }
+#endif
+ 
+  int t = 1;
+  // cin >> t;
+ 
+  while (t--) {
+    solve();
+  }
+ 
+  return 0;
+}
