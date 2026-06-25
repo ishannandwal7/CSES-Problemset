@@ -52,48 +52,10 @@ class DSU {
   }
 };
 
-int startNode = -1;
-
-void getCycle(int node,vector<int>&parent){
-  vector<int>cycle;
-  cycle.push_back(startNode);
-  while(parent[node]!=node && node != startNode){
-    cycle.push_back(node);
-    node = parent[node];
-  }
-  cycle.push_back(startNode);
-  reverse(begin(cycle),end(cycle));
-  cout<<cycle.size()<<"\n";
-  for(auto x:cycle){
-    cout<<x<<" ";
-  }
-  return ;
-}
-bool dfs(int node,vector<vector<int>>&adj,vector<bool>&vis,vector<bool>&pathVis,vector<int>&parent){
-  vis[node]=1;
-  pathVis[node]=1;
-  for(auto child:adj[node]){
-    if(!vis[child]){
-      parent[child]=node;
-      if(dfs(child,adj,vis,pathVis,parent)){return 1;}
-    }else{
-      if(pathVis[child]){
-        startNode = child;
-        getCycle(node,parent);
-        return 1;
-      }
-    }
-  }
-  pathVis[node]=0;
-  parent[node] = node;
-  return 0;
-}
-
 void solve() {
   int n,m;cin>>n>>m;
   vector<vector<int>>adj(n+1);
   vector<int>indegree(n+1,0);
-  vector<bool>vis(n+1,0);
   vector<int>ans;
   queue<int>q;
   for(int i=0;i<m;++i){
@@ -110,7 +72,6 @@ void solve() {
   while(!q.empty()){
     auto head = q.front();
     q.pop();
-    // vis[head]=1;
     ans.push_back(head);
     for(auto x:adj[head]){
       --indegree[x];
