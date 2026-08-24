@@ -1,0 +1,89 @@
+#include "bits/stdc++.h"
+#include <algorithm>
+#include <ostream>
+#include <queue>
+#include <string>
+#include <unordered_map>
+using namespace std;
+#define fast_io                                                                \
+  ios_base::sync_with_stdio(false);                                            \
+  cin.tie(NULL);                                                               \
+  cout.tie(NULL)
+#define ll long long
+#define pb push_back
+#define all(v) v.begin(), v.end()
+#define sz(x) (int)(x).size()
+const int mod = 1e9 + 7;
+const int MX = 20;
+ 
+// int dx[8] = {0,0,-1,-1,-1,1,1,1};
+// int dy[8] = {-1,1,-1,0,1,-1,0,1};
+
+int dx[8] = {-1,-1,1,1,-2,-2,2,2};
+int dy[8] = {2,-2,2,-2,1,-1,1,-1};
+ 
+//         L, R, U, D
+// int dx[4] ={0,0,-1,1};
+// int dy[4] ={-1,1,0,0};
+
+vector<vector<int>>ans;
+bool dfs(int i,int j,vector<vector<int>>&futureMoves,vector<vector<int>>&arr){
+  if(arr[i][j]==64){ans = arr;return 1;}
+  priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>,greater<pair<int,pair<int,int>>>>pq;
+  for(int it=0;it<8;++it){
+    int X = dx[it]+i,Y =dy[it]+j;
+    if(X>=0 && X<8 && Y>=0 && Y<8 && arr[X][Y]==0){
+      pq.push({futureMoves[X][Y],{X,Y}});
+    }
+  }
+  while(!pq.empty()){
+    auto head = pq.top();pq.pop();
+    int x = head.second.first,y = head.second.second;
+    arr[x][y] = arr[i][j]+1;
+    if(dfs(x,y,futureMoves,arr)){
+      return 1;
+    }
+    arr[x][y] = 0;
+  }
+  return 0;
+}
+
+void solve(){
+  int n,m;cin>>n>>m;
+  vector<vector<int>>futureMoves(8,vector<int>(8,0)),grid(8,vector<int>(8,0));
+  grid[m-1][n-1]=1;
+  for(int i=0;i<8;++i){
+    for(int j=0;j<8;++j){
+      for(int it=0;it<8;++it){
+        int X = dx[it]+i,Y=dy[it]+j;
+        if(X>=0 && X<8 && Y>=0 && Y<8){futureMoves[i][j]++;}
+      }
+    }
+  }
+  dfs(m-1,n-1,futureMoves,grid);
+  for(auto x:ans){
+    for(auto y:x){cout<<y<<" ";}
+    cout<<"\n";
+  }
+  return ;
+}
+ 
+ 
+int main() {
+  fast_io;
+#ifndef ONLINE_JUDGE
+  if (fopen("input.txt", "r")) {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+  }
+#endif
+ 
+  int t = 1;
+  // cin >> t;
+ 
+  while (t--) {
+    solve();
+  }
+ 
+  return 0;
+}
